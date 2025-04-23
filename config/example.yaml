@@ -1,0 +1,18 @@
+server:
+  mode: "dev"
+  port: 8080
+logger:
+  filename: "logs/dev.log"
+  max_size: 500 #megabytes
+  max_backups: 3
+  max_age: 25 #days
+  compress: true
+database:
+  driver: "postgres"
+  data_source: "postgresql"
+  host: "localhost"
+  port: 5432
+  username: "postgres"
+  password: "postgres"
+  database_name: "postgres"
+  ssl_mode: "disable"

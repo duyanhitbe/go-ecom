@@ -1,0 +1,6 @@
+/.idea
+/bin
+/logs
+config/dev.yaml
+config/prod.yaml
+test/coverage.*

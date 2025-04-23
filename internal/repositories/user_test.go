@@ -1,0 +1,46 @@
+package repositories
+
+import (
+	"github.com/go-faker/faker/v4"
+	"github.com/stretchr/testify/require"
+	"testing"
+)
+
+func createTestUser(t *testing.T) *User {
+	user, err := testQueries.CreateUser(ctx, &CreateUserParams{
+		Username: faker.Username(),
+		Password: faker.Password(),
+	})
+
+	require.NoError(t, err)
+	require.NotEmpty(t, user.ID)
+	require.NotEmpty(t, user.Username)
+	require.NotEmpty(t, user.Password)
+	require.NotEmpty(t, user.CreatedAt)
+	require.NotEmpty(t, user.UpdatedAt)
+
+	return user
+}
+
+func TestQueries_CreateUser(t *testing.T) {
+	createTestUser(t)
+}
+
+func TestQueries_FindUser(t *testing.T) {
+	createTestUser(t)
+
+	users, err := testQueries.FindUser(ctx, &FindUserParams{
+		Offset: 0,
+		Limit:  10,
+	})
+
+	require.NoError(t, err)
+	require.NotEmpty(t, users)
+	for _, user := range users {
+		require.NotEmpty(t, user.ID)
+		require.NotEmpty(t, user.Username)
+		require.NotEmpty(t, user.Password)
+		require.NotEmpty(t, user.CreatedAt)
+		require.NotEmpty(t, user.UpdatedAt)
+	}
+}
