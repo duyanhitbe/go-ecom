@@ -5,7 +5,7 @@ import (
 	"github.com/duyanhitbe/go-ecom/pkg/logger"
 )
 
-func InitLogger() {
+func initLogger() {
 	lg := logger.NewZapLogger()
 
 	global.Logger = lg

@@ -5,7 +5,7 @@ import (
 	"github.com/duyanhitbe/go-ecom/pkg/hash"
 )
 
-func InitHash() {
+func initHash() {
 	h := hash.NewBcrypt()
 	global.Hash = h
 }

@@ -8,11 +8,7 @@ import (
 )
 
 func main() {
-	initialize.InitConfig()
-	initialize.InitLogger()
-	initialize.InitHash()
-	initialize.InitToken()
-	initialize.InitDatabase()
+	initialize.Init()
 
 	addr := fmt.Sprintf(":%d", config.Cfg.Server.Port)
 	s := server.NewRestfulServer(addr)

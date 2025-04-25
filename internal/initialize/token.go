@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-func InitToken() {
+func initToken() {
 	jwt, err := token.NewJwt(config.Cfg.Token.Secret)
 	if err != nil {
 		log.Fatalf("fail to init token: %v", err)

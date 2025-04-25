@@ -10,7 +10,7 @@ import (
 	"log"
 )
 
-func InitDatabase() {
+func initDatabase() {
 	dbCfg := config.Cfg.Database
 	connStr := fmt.Sprintf(
 		"%s://%s:%s@%s:%d/%s?sslmode=%s",
