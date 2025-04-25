@@ -3,16 +3,21 @@ package handlers
 import (
 	"github.com/duyanhitbe/go-ecom/internal/dto"
 	"github.com/duyanhitbe/go-ecom/internal/repositories"
+	"github.com/duyanhitbe/go-ecom/pkg/hash"
 	"github.com/duyanhitbe/go-ecom/pkg/utils"
 	"net/http"
 )
 
 type UserHandler struct {
 	repository repositories.Querier
+	hash       hash.Hash
 }
 
-func NewUserHandler(repository repositories.Querier) *UserHandler {
-	return &UserHandler{repository: repository}
+func NewUserHandler(repository repositories.Querier, hash hash.Hash) *UserHandler {
+	return &UserHandler{
+		repository: repository,
+		hash:       hash,
+	}
 }
 
 func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
@@ -29,16 +34,24 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	hashPassword, err := h.hash.Hash(req.Password)
+	if err != nil {
+		rsp := dto.NewErrResponse(http.StatusInternalServerError, err)
+		dto.Write(w, rsp)
+		return
+	}
+
 	user, err := h.repository.CreateUser(r.Context(), &repositories.CreateUserParams{
 		Username: req.Username,
-		Password: req.Password,
+		Password: hashPassword,
 	})
 	if err != nil {
 		rsp := dto.NewErrResponse(http.StatusInternalServerError, err)
 		dto.Write(w, rsp)
 		return
 	}
-	rsp := dto.NewCreatedResponse(user)
+	usr := dto.NewCreateUserResponse(user)
+	rsp := dto.NewCreatedResponse[*dto.CreateUserResponse](usr)
 	dto.Write(w, rsp)
 }
 
@@ -68,6 +81,7 @@ func (h *UserHandler) FindUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	meta := dto.NewMeta(perPage, page, count)
-	rsp := dto.NewPaginatedResponse[[]*repositories.User](users, meta)
+	usr := dto.NewFindUserResponse(users)
+	rsp := dto.NewPaginatedResponse[[]*dto.FindUserResponse](usr, meta)
 	dto.Write(w, rsp)
 }

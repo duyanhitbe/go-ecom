@@ -2,8 +2,12 @@ package dto
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"github.com/duyanhitbe/go-ecom/internal/repositories"
+	"github.com/google/uuid"
 	"net/http"
+	"time"
 )
 
 type CreateUserRequest struct {
@@ -36,6 +40,22 @@ func (req *CreateUserRequest) Validate() []Error {
 	return errs
 }
 
+type CreateUserResponse struct {
+	ID        uuid.UUID `json:"id"`
+	Username  string    `json:"username"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+func NewCreateUserResponse(user *repositories.User) *CreateUserResponse {
+	return &CreateUserResponse{
+		ID:        user.ID,
+		Username:  user.Username,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+	}
+}
+
 type FindUserRequest struct {
 	Page    *int32 `json:"page"`
 	PerPage *int32 `json:"per_page"`
@@ -52,6 +72,9 @@ func NewFindUserRequest(r *http.Request) (*FindUserRequest, error) {
 		if err != nil {
 			return nil, err
 		}
+		if pageNum < 1 {
+			return nil, errors.New("page must be greater than 0")
+		}
 		req.Page = &pageNum
 	}
 
@@ -61,8 +84,33 @@ func NewFindUserRequest(r *http.Request) (*FindUserRequest, error) {
 		if err != nil {
 			return nil, err
 		}
+		if perPageNum < 1 {
+			return nil, errors.New("per_page must be greater than 0")
+		}
 		req.PerPage = &perPageNum
 	}
 
 	return &req, nil
+}
+
+type FindUserResponse struct {
+	ID        uuid.UUID `json:"id"`
+	Username  string    `json:"username"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+func NewFindUserResponse(users []*repositories.User) []*FindUserResponse {
+	var u []*FindUserResponse
+
+	for _, user := range users {
+		u = append(u, &FindUserResponse{
+			ID:        user.ID,
+			Username:  user.Username,
+			CreatedAt: user.CreatedAt,
+			UpdatedAt: user.UpdatedAt,
+		})
+	}
+
+	return u
 }

@@ -21,3 +21,5 @@ test-coverage:
 	rm -f test/coverage.out test/coverage.html
 	go test -coverprofile=test/coverage.out ./...
 	go tool cover -html=test/coverage.out -o test/coverage.html
+mock:
+	mockgen -destination=test/mocks/$(file).go -package=mock github.com/duyanhitbe/go-ecom/$(dest) $(interface)

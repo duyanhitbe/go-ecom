@@ -44,3 +44,10 @@ func TestQueries_FindUser(t *testing.T) {
 		require.NotEmpty(t, user.UpdatedAt)
 	}
 }
+
+func TestQueries_CountUser(t *testing.T) {
+	createTestUser(t)
+	count, err := testQueries.CountUser(ctx)
+	require.NoError(t, err)
+	require.NotZero(t, count)
+}

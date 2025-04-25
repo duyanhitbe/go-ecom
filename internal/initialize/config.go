@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-func LoadConfig() {
+func InitConfig() {
 	mode := os.Getenv(constants.GoModeEnvKey)
 	if mode == "" {
 		mode = constants.DevelopmentMode

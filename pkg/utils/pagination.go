@@ -3,9 +3,14 @@ package utils
 func GetPaginationMeta(pg, perPg *int32) (page int32, perPage int32, offset int32) {
 	if pg == nil {
 		page = 1
+	} else {
+		page = *pg
 	}
+
 	if perPg == nil {
 		perPage = 10
+	} else {
+		perPage = *perPg
 	}
 
 	offset = (page - 1) * perPage

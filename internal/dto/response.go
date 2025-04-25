@@ -46,34 +46,34 @@ func NewMeta(perPage, page, total int32) *Meta {
 	}
 }
 
-func NewResponse[T any](statusCode int, success bool, data *T) *Response[T] {
+func NewResponse[T any](statusCode int, success bool, data T) *Response[T] {
 	message := http.StatusText(statusCode)
 	return &Response[T]{
 		StatusCode: &statusCode,
 		Message:    &message,
 		Success:    &success,
-		Data:       data,
+		Data:       &data,
 	}
 }
 
-func NewOKResponse[T any](data *T) *Response[T] {
+func NewOKResponse[T any](data T) *Response[T] {
 	statusCode := http.StatusOK
 	return NewResponse(statusCode, true, data)
 }
 
-func NewCreatedResponse[T any](data *T) *Response[T] {
+func NewCreatedResponse[T any](data T) *Response[T] {
 	statusCode := http.StatusCreated
 	return NewResponse(statusCode, true, data)
 }
 
 func NewPaginatedResponse[T any](data T, meta *Meta) *Response[T] {
 	statusCode := http.StatusOK
-	rsp := NewResponse(statusCode, true, &data)
+	rsp := NewResponse(statusCode, true, data)
 	rsp.Meta = meta
 	return rsp
 }
 
-func NewErrResponse(statusCode int, err error) *Response[any] {
+func NewErrResponse(statusCode int, err error) *Response[*any] {
 	var data *any = nil
 	rsp := NewResponse(statusCode, true, data)
 	msg := err.Error()
@@ -83,14 +83,14 @@ func NewErrResponse(statusCode int, err error) *Response[any] {
 	return rsp
 }
 
-func NewErrorResponse(statusCode int, err Error) *Response[any] {
+func NewErrorResponse(statusCode int, err Error) *Response[*any] {
 	var data *any = nil
 	rsp := NewResponse(statusCode, true, data)
 	rsp.Error = &err
 	return rsp
 }
 
-func NewErrorsResponse(statusCode int, errs []Error) *Response[any] {
+func NewErrorsResponse(statusCode int, errs []Error) *Response[*any] {
 	var data *any = nil
 	rsp := NewResponse(statusCode, true, data)
 	rsp.Errors = &errs
