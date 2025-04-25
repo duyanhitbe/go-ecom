@@ -12,3 +12,9 @@ OFFSET sqlc.arg('offset');
 -- name: CountUser :one
 SELECT COUNT(*)::int4
 FROM users;
+
+-- name: FindOneUserByUsername :one
+SELECT *
+FROM users
+WHERE username = $1
+LIMIT 1;

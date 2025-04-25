@@ -83,6 +83,17 @@ func NewErrResponse(statusCode int, err error) *Response[*any] {
 	return rsp
 }
 
+func NewErrWithFieldResponse(statusCode int, field string, err error) *Response[*any] {
+	var data *any = nil
+	rsp := NewResponse(statusCode, true, data)
+	msg := err.Error()
+	rsp.Error = &Error{
+		Field:   field,
+		Message: msg,
+	}
+	return rsp
+}
+
 func NewErrorResponse(statusCode int, err Error) *Response[*any] {
 	var data *any = nil
 	rsp := NewResponse(statusCode, true, data)

@@ -45,6 +45,26 @@ func (q *Queries) CreateUser(ctx context.Context, arg *CreateUserParams) (*User,
 	return &i, err
 }
 
+const findOneUserByUsername = `-- name: FindOneUserByUsername :one
+SELECT id, username, password, created_at, updated_at
+FROM users
+WHERE username = $1
+LIMIT 1
+`
+
+func (q *Queries) FindOneUserByUsername(ctx context.Context, username string) (*User, error) {
+	row := q.queryRow(ctx, q.findOneUserByUsernameStmt, findOneUserByUsername, username)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Password,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return &i, err
+}
+
 const findUser = `-- name: FindUser :many
 SELECT id, username, password, created_at, updated_at
 FROM users

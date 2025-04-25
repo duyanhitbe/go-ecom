@@ -16,3 +16,5 @@ database:
   password: "postgres"
   database_name: "postgres"
   ssl_mode: "disable"
+token:
+  secret: "HpKr55CzqScn235HAsZCqeW9Xkp3JBjI"

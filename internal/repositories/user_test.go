@@ -51,3 +51,16 @@ func TestQueries_CountUser(t *testing.T) {
 	require.NoError(t, err)
 	require.NotZero(t, count)
 }
+
+func TestQueries_FindOneUserByUsername(t *testing.T) {
+	user := createTestUser(t)
+
+	foundUser, err := testQueries.FindOneUserByUsername(ctx, user.Username)
+	require.NoError(t, err)
+	require.NotEmpty(t, foundUser.ID)
+	require.NotEmpty(t, foundUser.Username)
+	require.NotEmpty(t, foundUser.Password)
+	require.NotEmpty(t, foundUser.CreatedAt)
+	require.NotEmpty(t, foundUser.UpdatedAt)
+	require.Equal(t, user.Username, foundUser.Username)
+}

@@ -11,6 +11,7 @@ func main() {
 	initialize.InitConfig()
 	initialize.InitLogger()
 	initialize.InitHash()
+	initialize.InitToken()
 	initialize.InitDatabase()
 
 	addr := fmt.Sprintf(":%d", config.Cfg.Server.Port)

@@ -39,6 +39,14 @@ func TestUserHandler_CreateUser(t *testing.T) {
 				Password: fakePassword,
 			},
 			mockBehavior: func() {
+				mockQuerier.EXPECT().
+					FindOneUserByUsername(gomock.Any(), fakeUsername).
+					Times(1).
+					Return(&repositories.User{
+						ID:        uuid.New(),
+						CreatedAt: time.Now(),
+						UpdatedAt: time.Now(),
+					}, nil)
 				mockHash.EXPECT().
 					Hash(fakePassword).
 					Times(1).
@@ -48,6 +56,7 @@ func TestUserHandler_CreateUser(t *testing.T) {
 						Username: fakeUsername,
 						Password: hashedPassword,
 					}).
+					Times(1).
 					Return(&repositories.User{
 						ID:        uuid.New(),
 						Username:  fakeUsername,
@@ -70,7 +79,7 @@ func TestUserHandler_CreateUser(t *testing.T) {
 			expectedCode: http.StatusBadRequest,
 		},
 		{
-			name: "Database error",
+			name: "Database error from CreateUser",
 			input: &dto.CreateUserRequest{
 				Username: fakeUsername,
 				Password: fakePassword,
@@ -81,13 +90,52 @@ func TestUserHandler_CreateUser(t *testing.T) {
 					Times(1).
 					Return(hashedPassword, nil)
 				mockQuerier.EXPECT().
+					FindOneUserByUsername(gomock.Any(), fakeUsername).
+					Times(1).
+					Return(&repositories.User{}, nil)
+				mockQuerier.EXPECT().
 					CreateUser(gomock.Any(), &repositories.CreateUserParams{
 						Username: fakeUsername,
 						Password: hashedPassword,
 					}).
+					Times(1).
 					Return(nil, errors.New("database error"))
 			},
 			expectedCode: http.StatusInternalServerError,
+		},
+		{
+			name: "Database error from FindOneUserByUsername",
+			input: &dto.CreateUserRequest{
+				Username: fakeUsername,
+				Password: fakePassword,
+			},
+			mockBehavior: func() {
+				mockQuerier.EXPECT().
+					FindOneUserByUsername(gomock.Any(), fakeUsername).
+					Times(1).
+					Return(nil, errors.New("database error"))
+			},
+			expectedCode: http.StatusInternalServerError,
+		},
+		{
+			name: "Username already exists",
+			input: &dto.CreateUserRequest{
+				Username: fakeUsername,
+				Password: fakePassword,
+			},
+			mockBehavior: func() {
+				mockQuerier.EXPECT().
+					FindOneUserByUsername(gomock.Any(), fakeUsername).
+					Times(1).
+					Return(&repositories.User{
+						ID:        uuid.New(),
+						Username:  fakeUsername,
+						Password:  hashedPassword,
+						CreatedAt: time.Now(),
+						UpdatedAt: time.Now(),
+					}, nil)
+			},
+			expectedCode: http.StatusBadRequest,
 		},
 		{
 			name: "Hash password error",
@@ -96,6 +144,14 @@ func TestUserHandler_CreateUser(t *testing.T) {
 				Password: fakePassword,
 			},
 			mockBehavior: func() {
+				mockQuerier.EXPECT().
+					FindOneUserByUsername(gomock.Any(), fakeUsername).
+					Times(1).
+					Return(&repositories.User{
+						ID:        uuid.New(),
+						CreatedAt: time.Now(),
+						UpdatedAt: time.Now(),
+					}, nil)
 				mockHash.EXPECT().
 					Hash(fakePassword).
 					Times(1).
@@ -157,6 +213,7 @@ func TestUserHandler_FindUser(t *testing.T) {
 						Offset: offset,
 						Limit:  limit,
 					}).
+					Times(1).
 					Return([]*repositories.User{
 						{
 							ID:        uuid.New(),
@@ -168,6 +225,7 @@ func TestUserHandler_FindUser(t *testing.T) {
 					}, nil)
 				mockQuerier.EXPECT().
 					CountUser(gomock.Any()).
+					Times(1).
 					Return(int32(1), nil)
 			},
 			expectedCode: http.StatusOK,
@@ -197,6 +255,7 @@ func TestUserHandler_FindUser(t *testing.T) {
 						Offset: 0,
 						Limit:  10,
 					}).
+					Times(1).
 					Return(nil, errors.New("database error"))
 			},
 			expectedCode: http.StatusInternalServerError,
@@ -210,9 +269,11 @@ func TestUserHandler_FindUser(t *testing.T) {
 						Offset: 0,
 						Limit:  10,
 					}).
+					Times(1).
 					Return([]*repositories.User{}, nil)
 				mockQuerier.EXPECT().
 					CountUser(gomock.Any()).
+					Times(1).
 					Return(int32(0), errors.New("database error"))
 			},
 			expectedCode: http.StatusInternalServerError,

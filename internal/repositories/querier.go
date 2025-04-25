@@ -11,6 +11,7 @@ import (
 type Querier interface {
 	CountUser(ctx context.Context) (int32, error)
 	CreateUser(ctx context.Context, arg *CreateUserParams) (*User, error)
+	FindOneUserByUsername(ctx context.Context, username string) (*User, error)
 	FindUser(ctx context.Context, arg *FindUserParams) ([]*User, error)
 }
 

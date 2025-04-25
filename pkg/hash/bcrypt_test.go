@@ -42,9 +42,9 @@ func TestBcrypt_Verify(t *testing.T) {
 		expectErr bool
 	}{
 		{"valid hash and password", hash, "securepassword", true, false},
-		{"invalid password", hash, "wrongpassword", false, true},
+		{"invalid password", hash, "wrongpassword", false, false},
 		{"empty hash", "", "securepassword", false, true},
-		{"empty password", hash, "", false, true},
+		{"empty password", hash, "", false, false},
 		{"malformed hash", "invalidhash", "securepassword", false, true},
 	}
 

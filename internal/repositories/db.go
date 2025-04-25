@@ -30,6 +30,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.createUserStmt, err = db.PrepareContext(ctx, createUser); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateUser: %w", err)
 	}
+	if q.findOneUserByUsernameStmt, err = db.PrepareContext(ctx, findOneUserByUsername); err != nil {
+		return nil, fmt.Errorf("error preparing query FindOneUserByUsername: %w", err)
+	}
 	if q.findUserStmt, err = db.PrepareContext(ctx, findUser); err != nil {
 		return nil, fmt.Errorf("error preparing query FindUser: %w", err)
 	}
@@ -46,6 +49,11 @@ func (q *Queries) Close() error {
 	if q.createUserStmt != nil {
 		if cerr := q.createUserStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createUserStmt: %w", cerr)
+		}
+	}
+	if q.findOneUserByUsernameStmt != nil {
+		if cerr := q.findOneUserByUsernameStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing findOneUserByUsernameStmt: %w", cerr)
 		}
 	}
 	if q.findUserStmt != nil {
@@ -90,19 +98,21 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 }
 
 type Queries struct {
-	db             DBTX
-	tx             *sql.Tx
-	countUserStmt  *sql.Stmt
-	createUserStmt *sql.Stmt
-	findUserStmt   *sql.Stmt
+	db                        DBTX
+	tx                        *sql.Tx
+	countUserStmt             *sql.Stmt
+	createUserStmt            *sql.Stmt
+	findOneUserByUsernameStmt *sql.Stmt
+	findUserStmt              *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
-		db:             tx,
-		tx:             tx,
-		countUserStmt:  q.countUserStmt,
-		createUserStmt: q.createUserStmt,
-		findUserStmt:   q.findUserStmt,
+		db:                        tx,
+		tx:                        tx,
+		countUserStmt:             q.countUserStmt,
+		createUserStmt:            q.createUserStmt,
+		findOneUserByUsernameStmt: q.findOneUserByUsernameStmt,
+		findUserStmt:              q.findUserStmt,
 	}
 }

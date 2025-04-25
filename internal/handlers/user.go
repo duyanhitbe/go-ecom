@@ -3,6 +3,7 @@ package handlers
 import (
 	"github.com/duyanhitbe/go-ecom/internal/dto"
 	"github.com/duyanhitbe/go-ecom/internal/repositories"
+	"github.com/duyanhitbe/go-ecom/pkg/constants"
 	"github.com/duyanhitbe/go-ecom/pkg/hash"
 	"github.com/duyanhitbe/go-ecom/pkg/utils"
 	"net/http"
@@ -30,6 +31,18 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	if errs := req.Validate(); len(errs) > 0 {
 		rsp := dto.NewErrorsResponse(http.StatusBadRequest, errs)
+		dto.Write(w, rsp)
+		return
+	}
+
+	exist, err := h.repository.FindOneUserByUsername(r.Context(), req.Username)
+	if err != nil && !utils.IsErrNoRows(err) {
+		rsp := dto.NewErrResponse(http.StatusInternalServerError, err)
+		dto.Write(w, rsp)
+		return
+	}
+	if exist != nil && exist.Username != "" {
+		rsp := dto.NewErrWithFieldResponse(http.StatusBadRequest, "username", constants.ErrUserAlreadyExists)
 		dto.Write(w, rsp)
 		return
 	}

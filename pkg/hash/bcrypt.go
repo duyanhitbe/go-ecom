@@ -1,6 +1,9 @@
 package hash
 
-import "golang.org/x/crypto/bcrypt"
+import (
+	"github.com/duyanhitbe/go-ecom/pkg/utils"
+	"golang.org/x/crypto/bcrypt"
+)
 
 type Bcrypt struct {
 }
@@ -20,6 +23,10 @@ func (b *Bcrypt) Hash(password string) (string, error) {
 func (b *Bcrypt) Verify(hash, password string) (bool, error) {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	if err != nil {
+		if utils.IsErrMismatchedPassword(err) {
+			return false, nil
+		}
+
 		return false, err
 	}
 	return true, nil

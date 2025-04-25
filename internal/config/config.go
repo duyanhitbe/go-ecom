@@ -4,6 +4,7 @@ type Config struct {
 	Server   ServerConfig   `mapstructure:"server"`
 	Logger   LoggerConfig   `mapstructure:"logger"`
 	Database DatabaseConfig `mapstructure:"database"`
+	Token    TokenConfig    `mapstructure:"token"`
 }
 
 type ServerConfig struct {
@@ -28,6 +29,10 @@ type DatabaseConfig struct {
 	Password     string `mapstructure:"password"`
 	DatabaseName string `mapstructure:"database_name"`
 	SslMode      string `mapstructure:"ssl_mode"`
+}
+
+type TokenConfig struct {
+	Secret string `mapstructure:"secret"`
 }
 
 var Cfg = new(Config)
