@@ -1,9 +1,9 @@
 build-api:
 	go build -o bin/api cmd/api/main.go
 run-api-dev:
-	GO_MOD=dev go run cmd/api/main.go
+	GO_MODE=dev go run cmd/api/main.go
 run-api-prod:
-	GO_MOD=prod go run cmd/api/main.go
+	GO_MODE=prod go run cmd/api/main.go
 build-cli:
 	go build -o bin/cli cmd/cli/main.go
 run-cli:

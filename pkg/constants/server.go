@@ -3,7 +3,7 @@ package constants
 const (
 	DevelopmentMode = "dev"
 	ProductionMode  = "prod"
-	GoModeEnvKey    = "GO_MOD"
+	GoModeEnvKey    = "GO_MODE"
 	ConfigDir       = "config"
 	ConfigType      = "yaml"
 )
